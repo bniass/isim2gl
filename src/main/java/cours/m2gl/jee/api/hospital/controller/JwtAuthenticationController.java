@@ -33,16 +33,6 @@ public class JwtAuthenticationController {
     private UserDetailsServiceImpl userDetailsService;
 
 
-    private void authenticate(String username, String password) throws Exception {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        } catch (DisabledException e) {
-
-            throw new Exception("USER_DISABLED", e);
-        } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
-        }
-    }
     @PreAuthorize("hasAuthority('ROLE_CLIENT') or hasAuthority('ROLE_ADMIN')")
     @RequestMapping(value = "/roles", method = RequestMethod.GET, consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE })
     public List<String> getUserRoles(@RequestParam("username") String username) throws Exception {
@@ -56,7 +46,7 @@ public class JwtAuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody JwtRequest authenticationRequest) {
-
+        System.out.println(authenticationRequest.getUsername()+" - "+authenticationRequest.getPassword());
         final UserDetails details = userDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
         Authentication authentication = null;
@@ -65,6 +55,7 @@ public class JwtAuthenticationController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             String jwt = jwtTokenUtil.generateToken(details);
+            System.out.println(jwt);
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             if(userDetails != null)
                 return ResponseEntity.ok(new ResponseJwt(jwt, userDetails.getUsername(), userDetails.getAuthorities()));

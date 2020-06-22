@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 public class ErrorResponse implements Serializable {
     private static final long serialVersionUID = -8091879091924046844L;
-    private final String message;
-    public ErrorResponse(String message) {
-        this.message = message;
+    private final String error;
+    public ErrorResponse(String error) {
+        this.error = error;
     }
-    public String getMessage() {
-        return this.message;
+    public String getError() {
+        return this.error;
     }
 }

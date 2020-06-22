@@ -1,6 +1,7 @@
 package cours.m2gl.jee.api.hospital.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
@@ -19,13 +20,11 @@ public class Service implements Serializable {
     @Column(length = 30)
     private String libelle;
 
-    @JsonBackReference
-    //@JsonIgnoreProperties("service")
+    @JsonIgnore
     @OneToMany(mappedBy = "service")
     private List<Medecin> medcins;
 
-    //@JsonIgnoreProperties("service")
-    @JsonManagedReference
+    @JsonIgnore
     @OneToMany(mappedBy = "service")
     private List<Specialite> specialites;
 

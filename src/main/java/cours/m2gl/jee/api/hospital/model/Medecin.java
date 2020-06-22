@@ -46,14 +46,12 @@ public class Medecin implements Serializable {
 
     private int salaire;
 
-    @JsonManagedReference
-    //@JsonIgnoreProperties("medcins")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne
     @JoinColumn(name = "service_id")
     private Service service;
 
-    @JsonManagedReference
-    //@JsonIgnoreProperties("medecins")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(name = "medecin_specialite",
             joinColumns = @JoinColumn(name = "medecin_id"),
