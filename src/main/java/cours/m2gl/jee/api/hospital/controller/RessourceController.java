@@ -7,6 +7,7 @@ import cours.m2gl.jee.api.hospital.model.Service;
 import cours.m2gl.jee.api.hospital.model.Specialite;
 import cours.m2gl.jee.api.hospital.service.IServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @Controller
 @RequestMapping(value = "/resource")
 @CrossOrigin
+@PreAuthorize("hasAuthority('ROLE_SECRETAIRE') or hasAuthority('ROLE_MEDECIN')")
 public class RessourceController {
     @Autowired
     private ServiceRepository serviceRepository;

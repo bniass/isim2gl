@@ -3,6 +3,7 @@ package cours.m2gl.jee.api.hospital.controller;
 import cours.m2gl.jee.api.hospital.config.JwtTokenUtil;
 import cours.m2gl.jee.api.hospital.model.ErrorResponse;
 import cours.m2gl.jee.api.hospital.model.JwtRequest;
+import cours.m2gl.jee.api.hospital.model.Response;
 import cours.m2gl.jee.api.hospital.model.ResponseJwt;
 import cours.m2gl.jee.api.hospital.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,22 +50,23 @@ public class JwtAuthenticationController {
         System.out.println(authenticationRequest.getUsername()+" - "+authenticationRequest.getPassword());
         final UserDetails details = userDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
-        Authentication authentication = null;
-        try {
-            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        if(details != null) {
+            Authentication authentication = null;
+            try {
+                authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String jwt = jwtTokenUtil.generateToken(details);
-            System.out.println(jwt);
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            if(userDetails != null)
-                return ResponseEntity.ok(new ResponseJwt(jwt, userDetails.getUsername(), userDetails.getAuthorities()));
-            return ResponseEntity.ok(new ErrorResponse("INVALID_CREDENTIALS"));
-        } catch (DisabledException e) {
-            return ResponseEntity.ok(new ErrorResponse("USER_DISABLED"));
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.ok(new ErrorResponse("INVALID_CREDENTIALS"));
+                String jwt = jwtTokenUtil.generateToken(details);
+                System.out.println(jwt);
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                ResponseJwt responseJwt = new ResponseJwt(jwt, userDetails.getUsername(), userDetails.getAuthorities());
+                return ResponseEntity.ok(new Response("ok", responseJwt));
+            } catch (DisabledException e) {
+                return ResponseEntity.ok(new Response("error", new ErrorResponse("USER_DISABLED")));
+            } catch (BadCredentialsException e) {
+                return ResponseEntity.ok(new Response("error", new ErrorResponse("BAD_CREDENTIALS")));
+            }
         }
-
+        return ResponseEntity.ok(new Response("error", new ErrorResponse("INVALID_USERNAME")));
     }
 }
